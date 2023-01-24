@@ -1,13 +1,9 @@
 
-
-// Implementazione del Server RMI
-
 /*----- import ---- */
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
-import java.io.FileWriter;
+
 import java.io.IOException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -28,22 +24,16 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_interfaceFile
 
 	/*
 	 * public static void stampa() {
-	 * System.out.println("Targa\tPatente\tTipo\tImages\n");
-	 * 
-	 * for (int i = 0; i < dim; i++) {
-	 * System.out.println(prenotazioni[i].getTarga() + "\t" +
-	 * prenotazioni[i].getPatente() + "/" + prenotazioni[i].getType() + "/" +
-	 * prenotazioni[i].getImages()
-	 * + "\t");
-	 * }
+	 *
 	 * }
 	 */
 
 	// Implementazione dei metodi
 
 	@Override
-	public synchronized String[] lista_file(String direttorio) throws RemoteException {
-		File dir = new File(direttorio);
+	// synchronized
+	public String[] lista_file_caratteri(char c1, char c2) throws RemoteException {
+		File dir = new File("files/");
 		int j = 0;
 		String result[];
 		if (dir.exists() && dir.isDirectory() && dir.canRead()) {
@@ -54,19 +44,11 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_interfaceFile
 			throw new RemoteException("Direttorio inesistente\n");
 		String[] tmp = new String[dir.listFiles().length];
 		for (String s : dir.list()) {
-			int num_consonanti = 0;
 			s = s.toLowerCase();
-			for (int i = 0; i < s.length(); i++) {
-				if (s.charAt(i) != 'a' && s.charAt(i) != 'e' && s.charAt(i) != 'i' && s.charAt(i) != 'o'
-						&& s.charAt(i) != 'u') {
-					System.out.println(
-							"Letta lettera " + s.charAt(i) + " = consonante, num consonanti=" + num_consonanti + "\n");
-					num_consonanti++;
-				}
-				if (num_consonanti >= 3) {
-					tmp[j++] = s;
-					break;
-				}
+			if (s.indexOf(c1) >= 0 && s.indexOf(c2) >= 0) {
+				System.out.println("Lette entrambe le lettere\n");
+				tmp[j] = s;
+				j++;
 			}
 		}
 		result = new String[j];
@@ -77,9 +59,9 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_interfaceFile
 	}
 
 	@Override
-	public synchronized int numerazione_righe(String file) throws RemoteException {
+	public int conta_occorrenze_interpunzione(String file) throws RemoteException {
 		File f = new File(file);
-		int num_linea = 1, result = 0;
+		int result = 0;
 		String line = null;
 		if (!f.exists() || !f.isFile() || !f.canRead()) {
 			return -1;
@@ -87,12 +69,11 @@ public class RMI_Server extends UnicastRemoteObject implements RMI_interfaceFile
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(f));
 			while ((line = br.readLine()) != null) {
-				if (num_linea % 2 != 0) {
-					result++;
-					line = result + ") " + line;
+				for (int i = 0; i < line.length(); i++) {
+					if (line.charAt(i) == '.' || line.charAt(i) == ';' || line.charAt(i) == '!') {
+						result++;
+					}
 				}
-				num_linea++;
-				System.out.println(line);
 			}
 			br.close();
 		} catch (IOException e) {
