@@ -1,2 +1,4 @@
-# Reti_Di_Calcolatori
+# Reti di Calcolatori T
+
+Alcune prove di reti di calcolatori T
  
