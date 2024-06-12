@@ -1,4 +1,4 @@
 # Reti di Calcolatori T
 
-Alcune prove di reti di calcolatori T
+Alcune prove svolte dell'esame di reti di calcolatori T in Unibo
  
